@@ -1,31 +1,33 @@
 # CopyManager - CLAUDE.md
 
-## プロジェクト概要
+## Project Overview
 
-CopyManager は Windows 専用の FastCopy ジョブ管理ツールです。
-複数の大容量ファイル・フォルダを大容量 NAS へコピーする際のジョブをキュー管理・進捗監視する GUI アプリケーションです。
+CopyManager is a Windows-only FastCopy job management tool.
+It provides a WPF GUI for queuing, monitoring, and retrying multiple large-file / large-folder
+copy operations to a NAS, using FastCopy as the copy engine via CLI.
 
-- **プラットフォーム**: Windows 10/11 専用
-- **UI フレームワーク**: WPF (.NET 8 以降)
-- **言語**: C# 12+
-- **FastCopy 連携**: コマンドライン (CLI) 経由
+- **Platform**: Windows 10 / 11 only
+- **UI Framework**: WPF (.NET 8+)
+- **Language**: C# 12+
+- **FastCopy integration**: Command-line (CLI) via `System.Diagnostics.Process`
+- **Application language**: English (all UI labels, messages, and tooltips)
 
 ---
 
-## 技術スタック
+## Tech Stack
 
-| 項目 | 内容 |
-|------|------|
+| Item | Detail |
+|------|--------|
 | Runtime | .NET 8 (Windows) |
 | UI | WPF (Windows Presentation Foundation) |
-| 言語 | C# 12 |
-| FastCopy 連携 | `System.Diagnostics.Process` で FastCopy.exe を起動 |
-| 設定永続化 | JSON (System.Text.Json) |
-| ジョブ永続化 | JSON ファイル (ローカル) |
+| Language | C# 12 |
+| FastCopy integration | Launch `FastCopy.exe` via `System.Diagnostics.Process` |
+| Settings persistence | JSON (`System.Text.Json`) |
+| Job persistence | JSON file (local) |
 
 ---
 
-## リポジトリ構成
+## Repository Layout
 
 ```
 CopyManager/
@@ -38,19 +40,19 @@ CopyManager/
 │       ├── App.xaml / App.xaml.cs
 │       ├── MainWindow.xaml / MainWindow.xaml.cs
 │       ├── Models/
-│       │   ├── CopyJob.cs          # ジョブデータモデル
-│       │   └── AppSettings.cs      # アプリ設定モデル
+│       │   ├── CopyJob.cs          # Job data model (incl. Priority, TotalSizeBytes)
+│       │   └── AppSettings.cs      # Application settings model
 │       ├── ViewModels/
-│       │   ├── MainViewModel.cs    # メイン画面 VM
-│       │   └── JobViewModel.cs     # 個別ジョブ VM
+│       │   ├── MainViewModel.cs    # Main window VM
+│       │   └── JobViewModel.cs     # Per-job VM
 │       ├── Services/
-│       │   ├── FastCopyService.cs  # FastCopy.exe 呼び出しラッパー
-│       │   ├── JobQueueService.cs  # キュー管理・実行制御
-│       │   └── SettingsService.cs  # 設定の読み書き
+│       │   ├── FastCopyService.cs  # FastCopy.exe wrapper
+│       │   ├── JobQueueService.cs  # Queue management & execution control
+│       │   └── SettingsService.cs  # Settings read/write
 │       ├── Views/
-│       │   ├── JobEditDialog.xaml  # ジョブ追加・編集ダイアログ
-│       │   └── SettingsDialog.xaml # アプリ設定ダイアログ
-│       └── Converters/             # WPF 値コンバーター
+│       │   ├── JobEditDialog.xaml  # Add / edit job dialog
+│       │   └── SettingsDialog.xaml # Application settings dialog
+│       └── Converters/             # WPF value converters
 └── tests/
     └── CopyManager.Tests/
         ├── CopyManager.Tests.csproj
@@ -60,19 +62,19 @@ CopyManager/
 
 ---
 
-## ビルド・実行方法
+## Build & Run
 
 ```bash
-# ビルド
+# Build
 dotnet build CopyManager.sln
 
-# 実行
+# Run
 dotnet run --project src/CopyManager/CopyManager.csproj
 
-# テスト
+# Test
 dotnet test tests/CopyManager.Tests/CopyManager.Tests.csproj
 
-# リリースビルド (Windows 自己完結型)
+# Release build (Windows self-contained)
 dotnet publish src/CopyManager/CopyManager.csproj \
   -c Release -r win-x64 --self-contained true \
   -o ./publish
@@ -80,67 +82,74 @@ dotnet publish src/CopyManager/CopyManager.csproj \
 
 ---
 
-## 主要な設計方針
+## Key Design Decisions
 
-### MVVM パターン
-WPF 標準の MVVM を採用。`INotifyPropertyChanged` + `ICommand` を使用する。
-外部ライブラリ (Prism, CommunityToolkit.Mvvm 等) は最小限に抑える方針だが、
-`CommunityToolkit.Mvvm` は採用可とする（ソースジェネレーター活用）。
+### MVVM Pattern
+Standard WPF MVVM with `INotifyPropertyChanged` + `ICommand`.
+External libraries are kept minimal; `CommunityToolkit.Mvvm` (source generators) is allowed.
 
-### FastCopy 連携
-- `FastCopyService` が FastCopy.exe のパスと引数を組み立て、`Process` で起動する
-- 標準出力・標準エラーを非同期で読み取り、進捗・エラーを `JobViewModel` に通知する
-- FastCopy の終了コードでジョブの成否を判定する (0 = 成功)
+### FastCopy Integration
+- `FastCopyService` builds the argument string and launches `FastCopy.exe` via `Process`
+- stdout / stderr are read asynchronously; progress and errors are pushed to `JobViewModel`
+- Job success/failure is determined by the FastCopy exit code (0 = success)
 
-### ジョブキュー
-- `JobQueueService` は `ConcurrentQueue<CopyJob>` でキューを管理する
-- 同時実行数は設定で変更可能 (デフォルト: 1)
-- ジョブ状態: `Pending → Running → Completed / Failed / Cancelled`
-- 失敗時は設定されたリトライ回数まで自動再試行する
+### Job Queue
+- `JobQueueService` manages jobs in priority order (High → Normal → Low), then FIFO within the same priority
+- Max concurrent jobs is configurable (default: 1)
+- Job states: `Pending → Running → Completed / Failed / Cancelled`
+- Failed jobs are automatically re-queued up to the configured retry limit
 
-### 設定・ジョブの永続化
-- `%APPDATA%\CopyManager\settings.json` にアプリ設定を保存する
-- `%APPDATA%\CopyManager\jobs.json` にジョブリストを保存する
-- アプリ起動時にジョブリストを復元し、未完了ジョブは `Pending` 状態に戻す
+### Job Naming
+- Job names are **never entered by the user**
+- They are derived automatically from the first source path's file/folder name
+- Multiple sources: `{firstName} (+{n-1} more)`
+
+### Total Size Calculation
+- When a job is created (or its sources edited), `TotalSizeBytes` is computed in the background
+- Shows as `Calculating...` until complete, then `X.XX GB` in the job list
+- While a job is running, the column shows `transferred GB / total GB`
+
+### Settings & Job Persistence
+- App settings saved to `%APPDATA%\CopyManager\settings.json`
+- Job list saved to `%APPDATA%\CopyManager\jobs.json`
+- On startup, unfinished jobs are restored and reset to `Pending`
 
 ---
 
-## FastCopy コマンドライン仕様
-
-FastCopy.exe の主要引数（参考）:
+## FastCopy CLI Reference
 
 ```
-FastCopy.exe /cmd=<コマンド> [オプション] "source1" "source2" /to="destination"
+FastCopy.exe /cmd=<command> [options] "source1" "source2" /to="destination"
 
-コマンド:
-  diff        差分コピー (新規・更新のみ)
-  force_copy  全ファイル上書きコピー
-  move        移動
+Commands:
+  diff        Differential copy (new / updated files only)
+  force_copy  Overwrite all files
+  move        Move files
 
-主要オプション:
-  /bufsize=256m     バッファサイズ
-  /speed=full       転送速度 (full / autoslow / 1..9)
-  /log              ログ有効化
-  /logfile="path"   ログファイルパス
-  /auto_close       完了後に FastCopy ウィンドウを自動クローズ
-  /no_confirm       確認ダイアログを表示しない
-  /error_stop       エラー発生時に停止
-  /filelog          ファイル単位のログ出力
+Key options:
+  /bufsize=256m     Buffer size
+  /speed=full       Transfer speed (full / autoslow / 1..9)
+  /log              Enable logging
+  /logfile="path"   Log file path
+  /auto_close       Auto-close FastCopy window on finish
+  /no_confirm       Suppress confirmation dialogs
+  /error_stop       Stop on error
+  /filelog          Per-file log output
 ```
 
 ---
 
-## コーディング規約
+## Coding Conventions
 
-- 命名: C# 標準 (PascalCase / camelCase)
-- 非同期: `async/await` を積極的に使用する。UI スレッドブロッキングは禁止
-- エラー処理: 外部プロセス呼び出しは必ず例外をキャッチしてジョブに記録する
-- ログ: `Microsoft.Extensions.Logging` を使用する
-- 単体テスト: `xUnit` を使用する。`FastCopyService` と `JobQueueService` は必ずテストを書く
+- Naming: C# standard (PascalCase / camelCase)
+- Async: use `async/await` throughout; never block the UI thread
+- Error handling: always catch exceptions from external process calls and record them on the job
+- Logging: use `Microsoft.Extensions.Logging`
+- Unit tests: `xUnit`; `FastCopyService` and `JobQueueService` must have test coverage
 
 ---
 
-## 依存関係
+## Dependencies
 
 ```xml
 <!-- src/CopyManager/CopyManager.csproj -->
@@ -154,15 +163,17 @@ FastCopy.exe /cmd=<コマンド> [オプション] "source1" "source2" /to="dest
 
 ---
 
-## よくある作業パターン
+## Common Workflow Patterns
 
-### ジョブ追加フロー
-1. ユーザーが「追加」ボタンをクリック
-2. `JobEditDialog` でソース・宛先・オプションを入力
-3. `MainViewModel.AddJobCommand` が `CopyJob` を生成して `JobQueueService` に追加
-4. `JobQueueService` がキューに積み、実行可能なら即座に `FastCopyService` を起動
+### Adding a Job
+1. User clicks **Add Job**
+2. `JobEditDialog` opens — user selects sources, destination, mode, and priority
+3. Job name is derived automatically from the first source path
+4. Background task calculates `TotalSizeBytes`
+5. `MainViewModel.AddJobCommand` creates `CopyJob` and passes it to `JobQueueService`
+6. `JobQueueService` inserts the job at the correct priority position; launches `FastCopyService` if a slot is free
 
-### 進捗取得フロー
-1. `FastCopyService` が FastCopy.exe の標準出力を非同期で読み取る
-2. パース結果を `JobViewModel.Progress` にバインドする
-3. WPF の `ProgressBar` がリアルタイム更新される
+### Progress Update Flow
+1. `FastCopyService` reads FastCopy.exe stdout asynchronously
+2. Parsed results are pushed to `JobViewModel.Progress`, `TransferredBytes`, `SpeedMbps`, etc.
+3. WPF `ProgressBar` and the Size column update in real time via data binding
