@@ -1,0 +1,125 @@
+<Window x:Class="CopyManager.Views.JobEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:CopyManager.Models"
+        Title="Add Job" Height="500" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Copy Mode -->
+        <GroupBox Grid.Row="0" Header="Copy Mode" Margin="0,0,0,8">
+            <StackPanel Margin="4">
+                <RadioButton Content="Differential" IsChecked="True"
+                             x:Name="RadioDifferential" Margin="0,2"/>
+                <RadioButton Content="Force Overwrite"
+                             x:Name="RadioForceCopy" Margin="0,2"/>
+                <RadioButton Content="Move"
+                             x:Name="RadioMove" Margin="0,2"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Priority -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+            <TextBlock Text="Priority:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <ComboBox x:Name="ComboPriority" Width="120" SelectedIndex="1">
+                <models:JobPriority>High</models:JobPriority>
+                <models:JobPriority>Normal</models:JobPriority>
+                <models:JobPriority>Low</models:JobPriority>
+            </ComboBox>
+        </StackPanel>
+
+        <!-- Sources -->
+        <GroupBox Grid.Row="2" Header="Source(s)" Margin="0,0,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="SourcesList" Grid.Row="0" Margin="4">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding}" VerticalAlignment="Center" Width="300"/>
+                                <Button Content="Remove" Tag="{Binding}" Click="OnRemoveSourceClick"
+                                        Padding="4,2" Margin="4,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+                    <Button Content="+ Add Folder" Click="OnAddFolderClick" Padding="8,4" Margin="0,0,4,0"/>
+                    <Button Content="+ Add File" Click="OnAddFileClick" Padding="8,4"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Destination -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,8">
+            <TextBlock Text="Destination:" Margin="0,0,0,4"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="DestinationText" Grid.Column="0" Margin="0,0,4,0"/>
+                <Button Grid.Column="1" Content="Browse" Click="OnBrowseDestinationClick" Padding="8,4"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Advanced Options -->
+        <Expander Grid.Row="4" Header="Advanced Options" Margin="0,0,0,8">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Buffer size (MB):" VerticalAlignment="Center" Margin="0,0,8,4"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="BufferSizeText" Text="" Margin="0,0,0,4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Speed:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" x:Name="SpeedCombo">
+                    <ComboBoxItem Content="" IsSelected="True"/>
+                    <ComboBoxItem Content="full"/>
+                    <ComboBoxItem Content="autoslow"/>
+                    <ComboBoxItem Content="1"/>
+                    <ComboBoxItem Content="2"/>
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                    <ComboBoxItem Content="5"/>
+                    <ComboBoxItem Content="6"/>
+                    <ComboBoxItem Content="7"/>
+                    <ComboBoxItem Content="8"/>
+                    <ComboBoxItem Content="9"/>
+                </ComboBox>
+            </Grid>
+        </Expander>
+
+        <!-- Job Name Preview -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="0,0,0,12">
+            <TextBlock Text="Job name (preview): " FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock x:Name="JobNamePreview" Text="—" VerticalAlignment="Center"
+                       FontStyle="Italic" Foreground="Gray"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Click="OnCancelClick" Padding="16,6" Margin="0,0,8,0"/>
+            <Button Content="Add" Click="OnAddClick" Padding="16,6" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

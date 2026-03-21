@@ -1,0 +1,74 @@
+<Window x:Class="CopyManager.Views.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="400" Width="480"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- FastCopy Path -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="FastCopy.exe path:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="FastCopyPathText" Margin="0,0,4,8"/>
+        <Button Grid.Row="0" Grid.Column="2" Content="Browse" Click="OnBrowseFastCopyClick" Padding="8,4" Margin="0,0,0,8"/>
+
+        <!-- Buffer Size -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Buffer size (MB):" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="BufferSizeText" Margin="0,0,0,8"/>
+
+        <!-- Speed -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Transfer speed:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SpeedCombo" Margin="0,0,0,8">
+            <ComboBoxItem Content="full"/>
+            <ComboBoxItem Content="autoslow"/>
+            <ComboBoxItem Content="1"/>
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3"/>
+            <ComboBoxItem Content="4"/>
+            <ComboBoxItem Content="5"/>
+            <ComboBoxItem Content="6"/>
+            <ComboBoxItem Content="7"/>
+            <ComboBoxItem Content="8"/>
+            <ComboBoxItem Content="9"/>
+        </ComboBox>
+
+        <!-- Max Concurrent Jobs -->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Max concurrent jobs:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" x:Name="MaxConcurrentText" Margin="0,0,0,8"/>
+
+        <!-- Max Retry Count -->
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Max retry count:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="MaxRetryText" Margin="0,0,0,8"/>
+
+        <!-- Retry Interval -->
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Retry interval (s):" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" x:Name="RetryIntervalText" Margin="0,0,0,8"/>
+
+        <!-- Log Directory -->
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Log directory:" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="LogDirectoryText" Margin="0,0,4,8"/>
+        <Button Grid.Row="6" Grid.Column="2" Content="Browse" Click="OnBrowseLogDirClick" Padding="8,4" Margin="0,0,0,8"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Click="OnCancelClick" Padding="16,6" Margin="0,0,8,0"/>
+            <Button Content="Save" Click="OnSaveClick" Padding="16,6" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
