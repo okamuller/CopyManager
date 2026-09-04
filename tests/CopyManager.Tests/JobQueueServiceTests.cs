@@ -455,7 +455,10 @@ public class JobQueueServiceTests
         var job = new CopyJob
         {
             Priority = priority,
-            SourcePaths = new List<string> { @"D:\TestSource" },
+            // AddJob re-derives Name from the first source path, so give each job
+            // its own path when a name is requested — otherwise every job added
+            // through AddJob ends up called "TestSource".
+            SourcePaths = new List<string> { name is null ? @"D:\TestSource" : $@"D:\{name}" },
             DestinationPath = @"\\NAS\dest"
         };
 
