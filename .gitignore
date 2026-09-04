@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+publish/
+
+# Build logs
+*.binlog
+*.log
+
+# User-specific / IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo

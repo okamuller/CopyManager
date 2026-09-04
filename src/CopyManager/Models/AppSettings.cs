@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace CopyManager.Models;
 
 public class AppSettings
