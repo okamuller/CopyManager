@@ -126,7 +126,7 @@ Completed   Failed        Cancelled        │
 |------|-------------|
 | OS | Windows 10 (21H2+) / Windows 11 |
 | Architecture | x64 |
-| .NET version | .NET 8+ |
+| .NET version | .NET 10+ |
 | UI responsiveness | UI must not freeze during transfers (async throughout) |
 | Startup time | Under 3 seconds |
 | Job persistence | Unfinished jobs restored after restart or crash |

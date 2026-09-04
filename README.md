@@ -14,7 +14,7 @@ FastCopy job management front-end for Windows. Queue, monitor, and retry multipl
 ## Requirements
 
 - Windows 10 (21H2+) / Windows 11 (x64)
-- .NET 8 Runtime
+- .NET 10 Runtime
 - [FastCopy](https://fastcopy.jp/) 3.x or later
 
 ## Build & Run

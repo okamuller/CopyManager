@@ -7,8 +7,8 @@ It provides a WPF GUI for queuing, monitoring, and retrying multiple large-file 
 copy operations to a NAS, using FastCopy as the copy engine via CLI.
 
 - **Platform**: Windows 10 / 11 only
-- **UI Framework**: WPF (.NET 8+)
-- **Language**: C# 12+
+- **UI Framework**: WPF (.NET 10+)
+- **Language**: C# 14+
 - **FastCopy integration**: Command-line (CLI) via `System.Diagnostics.Process`
 - **Application language**: English (all UI labels, messages, and tooltips)
 
@@ -18,9 +18,9 @@ copy operations to a NAS, using FastCopy as the copy engine via CLI.
 
 | Item | Detail |
 |------|--------|
-| Runtime | .NET 8 (Windows) |
+| Runtime | .NET 10 (Windows) |
 | UI | WPF (Windows Presentation Foundation) |
-| Language | C# 12 |
+| Language | C# 14 |
 | FastCopy integration | Launch `FastCopy.exe` via `System.Diagnostics.Process` |
 | Settings persistence | JSON (`System.Text.Json`) |
 | Job persistence | JSON file (local) |
@@ -154,7 +154,7 @@ Key options:
 ```xml
 <!-- src/CopyManager/CopyManager.csproj -->
 <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
-<PackageReference Include="Microsoft.Extensions.Logging" Version="8.*" />
+<PackageReference Include="Microsoft.Extensions.Logging" Version="10.*" />
 
 <!-- tests/CopyManager.Tests/CopyManager.Tests.csproj -->
 <PackageReference Include="xunit" Version="2.*" />
